@@ -1,49 +1,56 @@
 # os-s20: Project 0: Bootloader
 
-The source files contain the Tasks to be implemented by you along with some helpful hints.
-
-Each student has his/her own personal private repository. You may add/commit/push as you please during the completion of the project.
-
-## Submission
-To submit the project, you will create and push a tag from the latest commit will ALL of your code. If there are any additional information you would like us to know, please update this readme with the same.
-
-### To submit:
-1. Commit and Push ALL your code
+## Building boot0: Compilation
 ```
-$ git add <LIST_OF_UPDATED_FILES>
-$ git commit -m "<COMMENT>"
-$ git push origin project0
+$ gcc​ -MD -fno-builtin -nostdinc -fno-stack-protector -Os -g -m32 -I. -c -o boot0.o boot0.S
 ```
-2. Create a tag named `v0`.
+## Building boot0: Linking
 ```
-$ git tag -a v0 -m "Submission for project 0."
+$ ​ld -nostdlib -m elf_i386 -N -e start -Ttext 0x7c00 -o boot0.elf boot0.o
+```
+## Building boot0: Object Copying
+```
+$ objcopy -S -O binary boot0.elf boot0
 ```
 
-3. Push the tag:
+## Building boot1: Compilation
+Now, starting from the boot/boot1 folder, the following command will compile boot1.S
 ```
-$ git push origin v0
-```
-
-### To Re-submit:
-To re-submit you will have to forcefully update the tag and (if already pushed) forcefully push the tag.
-
-1. Make necessary changes, Commit and Push ALL you changes.
-```
-$ git add <LIST_OF_UPDATED_FILES>
-$ git commit -m "<COMMENT>"
-$ git push origin project0
+$ gcc -MD -fno-builtin -nostdinc -fno-stack-protector -Os -g -m32 -I. -c -o boot1.o
+boot1.S
 ```
 
-2. Update the tag:
+## Building boot1: Linking
 ```
-$ git tag -a -f v0 -m "Resubmission for project 0."
-```
-
-3. Forcefully push the tag:
-```
-$ git push -f origin v0
+$ ld -nostdlib -m elf_i386 -N -e start -Ttext <BOOT1 STARTS ADDRESS> -o boot1.elf
+boot1.o boot1main.o boot1lib.o exec_kernel.o
 ```
 
+## Building boot1: Object Copying
+```
+$ objcopy -S -O binary boot1.elf boot1
+```
 
-## Anything we should know???
-To execute the boot files simply run the script.sh provided in the folder "./script.h" and then finally run simulator.sh to run the bootloader.
+## Building kernel: Compilation
+Now, starting from the kern/init folder, the following command will compile entry.S
+```
+$ gcc -MD -fno-builtin -nostdinc -fno-stack-protector -D_KERN_ -Ikern -Ikern/kern -I.
+-m32 -O0 -c -o entry.o entry.S
+```
+
+## Building kernel: Linking
+```
+$ ld -o kernel -nostdlib -e start -m elf_i386 -Ttext=0x00100000 entry.o -b binary
+```
+
+## Building final image: Disk Creation
+For this last step, use these commands in the project root directory.
+```
+$ dd if=/dev/zero of=project0.img bs=512 count=256
+$ parted -s project0.img "mktable msdos mkpart primary 63s -1s set 1 boot on"
+$ dd if=boot/boot0/boot0 of=project0.img bs=446 count=1 conv=notrunc
+$ dd if=boot/boot1/boot1 of=project0.img bs=512 count=<NUMBER OF SECTORS TO WRITE>
+seek=1 conv=notrunc
+$ dd if=kern/init/kernel of=project0.img bs=512 seek=63 conv=notrunc
+```
+
