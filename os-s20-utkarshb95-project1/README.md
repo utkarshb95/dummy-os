@@ -1,49 +1,49 @@
 # os-s20: Project 1: Memory Management
 
-The source files contain the Tasks to be implemented by you along with some helpful hints. 
-
-Each student has his/her own personal private repository. You may add/commit/push as you please during the completion of the project. 
-
-## Submission
-To submit the project, you will create and push a tag from the latest commit will ALL of your code. If there are any additional information you would like us to know, please update this readme with the same.
-
-### To submit:
-1. Commit and Push ALL your code
+## Building and running the image
 ```
-$ git add <LIST_OF_UPDATED_FILES>
-$ git commit -m "<COMMENT>"
-$ git push origin project1
+$ make clean
+$ make TEST=1
 ```
-2. Create a tag named `v1`.
+Use this command to run unit tests to verify the working status of your code.
+
+## ALTERNATIVE: Building and running the image with provided solutions
+To use already provided compiled solutions. Use the SOL flag as shown below for this.
 ```
-$ git tag -a v1 -m "Submission for project 1."
+$ make clean
+$ make TEST=1 SOL=1
 ```
 
-3. Push the tag:
+### Normal Execution
+## Building the image
 ```
-$ git push origin v1
-```
-
-### To Re-submit:
-To re-submit you will have to forcefully update the tag and (if already pushed) forcefully push the tag.
-
-1. Make necessary changes, Commit and Push ALL you changes.
-```
-$ git add <LIST_OF_UPDATED_FILES>
-$ git commit -m "<COMMENT>"
-$ git push origin project1
+$ make clean
+$ make
 ```
 
-2. Update the tag:
+## ALTERNATIVE: Building the image with provided solutions
 ```
-$ git tag -a -f v1 -m "Resubmission for project 1."
+$ make clean
+$ make SOL=1
 ```
+These two commands will do all the steps required to build an image file. The make clean step will delete all the
+compiled binaries from past runs. After the image has been created, use one of the following execution modes:
 
-3. Forcefully push the tag:
+## Executing WITH QEMU VGA Monitor
 ```
-$ git push -f origin v1
+$ make qemu
 ```
+You can use Ctrl-a x to exit from the qemu.
 
-
-## Anything we should know???
-INSERT HERE
+## Executing WITHOUT QEMU VGA Monitor
+```
+$ make qemu-nox
+```
+## Executing with GDB and QEMU VGA Monitor
+```
+$ make qemu-gdb
+```
+## Executing with GDB without QEMU VGA Monitor
+```
+$ make qemu-nox-gdb
+```
