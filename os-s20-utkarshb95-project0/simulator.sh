@@ -1,0 +1,1 @@
+qemu-system-i386 -smp 1 -hda project0.img -serial mon:stdio -gdb tcp::4444 -m 512 -k en-us
